@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xml>
+  <Name value="KitsunePvPExtended" />
+  <DisplayName value="Kitsune PvP Extended" />
+  <Version value="0.1.0" />
+  <Description value="Server-side PvP balance: scales player-to-player damage only, leaving PvE 100% vanilla. Per-weapon-class scaling, headshot/limb multipliers, armor curve boost, per-hit damage cap, hot-reloadable config with bundled presets (vanilla-light / casual / medium / hardcore), and per-engagement telemetry." />
+  <Author value="AdaInTheLab" />
+  <Website value="https://github.com/Kitsune-Den/KitsunePvPExtended" />
+</xml>

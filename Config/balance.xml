@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  KitsunePvPExtended — live balance config.
+  This file ships as a copy of presets/medium.xml. Admins may edit it freely;
+  changes take effect via the console command:  kpvp reload
+  To swap presets:  kpvp preset hardcore   (overwrites this file from the preset)
+-->
+<balance preset="medium">
+  <enabled>true</enabled>
+  <logEveryHit>false</logEveryHit>
+  <globalMultiplier>0.60</globalMultiplier>
+  <perHitCapFractionMaxHp>0.50</perHitCapFractionMaxHp>
+
+  <weaponClasses>
+    <class name="default"   multiplier="1.00" />
+    <class name="pistol"    multiplier="0.85">
+      <itemPattern>pistol</itemPattern>
+      <itemPattern>magnum</itemPattern>
+      <itemPattern>desertVulture</itemPattern>
+    </class>
+    <class name="smg"       multiplier="0.80">
+      <itemPattern>smg</itemPattern>
+    </class>
+    <class name="ar"        multiplier="0.75">
+      <itemPattern>ak47</itemPattern>
+      <itemPattern>m60</itemPattern>
+      <itemPattern>tacticalAR</itemPattern>
+    </class>
+    <class name="shotgun"   multiplier="0.70">
+      <itemPattern>shotgun</itemPattern>
+    </class>
+    <class name="sniper"    multiplier="0.55">
+      <itemPattern>sniperRifle</itemPattern>
+      <itemPattern>huntingRifle</itemPattern>
+      <itemPattern>marksmanRifle</itemPattern>
+    </class>
+    <class name="bow"       multiplier="0.85">
+      <itemPattern>bow</itemPattern>
+      <itemPattern>crossbow</itemPattern>
+    </class>
+    <class name="melee"     multiplier="0.80">
+      <itemPattern>club</itemPattern>
+      <itemPattern>bat</itemPattern>
+      <itemPattern>sledge</itemPattern>
+      <itemPattern>knife</itemPattern>
+      <itemPattern>machete</itemPattern>
+      <itemPattern>axe</itemPattern>
+      <itemPattern>spear</itemPattern>
+    </class>
+    <class name="explosive" multiplier="0.60">
+      <itemPattern>rocketLauncher</itemPattern>
+      <itemPattern>pipeBomb</itemPattern>
+      <itemPattern>grenade</itemPattern>
+      <itemPattern>dynamite</itemPattern>
+    </class>
+  </weaponClasses>
+
+  <bodyParts>
+    <part name="default" multiplier="1.00" />
+    <part name="head"    multiplier="1.60" />
+    <part name="chest"   multiplier="1.00" />
+    <part name="arm"     multiplier="0.70" />
+    <part name="leg"     multiplier="0.75" />
+  </bodyParts>
+</balance>

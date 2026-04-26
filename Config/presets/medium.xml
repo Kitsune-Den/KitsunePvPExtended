@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Medium: the locked-in default — meaningful softening without dramatic feel change. -->
+<balance preset="medium">
+  <enabled>true</enabled>
+  <logEveryHit>false</logEveryHit>
+  <globalMultiplier>0.60</globalMultiplier>
+  <perHitCapFractionMaxHp>0.50</perHitCapFractionMaxHp>
+
+  <weaponClasses>
+    <class name="default"   multiplier="1.00" />
+    <class name="pistol"    multiplier="0.85" />
+    <class name="smg"       multiplier="0.80" />
+    <class name="ar"        multiplier="0.75" />
+    <class name="shotgun"   multiplier="0.70" />
+    <class name="sniper"    multiplier="0.55" />
+    <class name="bow"       multiplier="0.85" />
+    <class name="melee"     multiplier="0.80" />
+    <class name="explosive" multiplier="0.60" />
+  </weaponClasses>
+
+  <bodyParts>
+    <part name="default" multiplier="1.00" />
+    <part name="head"    multiplier="1.60" />
+    <part name="chest"   multiplier="1.00" />
+    <part name="arm"     multiplier="0.70" />
+    <part name="leg"     multiplier="0.75" />
+  </bodyParts>
+</balance>

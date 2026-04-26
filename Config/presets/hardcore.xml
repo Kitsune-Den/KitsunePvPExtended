@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Hardcore: Counter-Strike-feel sustained engagements. Body shots are recoverable; -->
+<!-- heads still lethal; explosives meaningfully softer; tight per-hit cap.            -->
+<balance preset="hardcore">
+  <enabled>true</enabled>
+  <logEveryHit>false</logEveryHit>
+  <globalMultiplier>0.50</globalMultiplier>
+  <perHitCapFractionMaxHp>0.40</perHitCapFractionMaxHp>
+
+  <weaponClasses>
+    <class name="default"   multiplier="1.00" />
+    <class name="pistol"    multiplier="0.80" />
+    <class name="smg"       multiplier="0.75" />
+    <class name="ar"        multiplier="0.70" />
+    <class name="shotgun"   multiplier="0.65" />
+    <class name="sniper"    multiplier="0.50" />
+    <class name="bow"       multiplier="0.80" />
+    <class name="melee"     multiplier="0.75" />
+    <class name="explosive" multiplier="0.55" />
+  </weaponClasses>
+
+  <bodyParts>
+    <part name="default" multiplier="1.00" />
+    <part name="head"    multiplier="1.80" />
+    <part name="chest"   multiplier="1.00" />
+    <part name="arm"     multiplier="0.55" />
+    <part name="leg"     multiplier="0.60" />
+  </bodyParts>
+</balance>

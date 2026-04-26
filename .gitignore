@@ -1,0 +1,8 @@
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.zip
+dist/
+7dtd-binaries/*.dll

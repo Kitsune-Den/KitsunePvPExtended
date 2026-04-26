@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Vanilla-light: minimal change — just shaves the most extreme one-shot spikes. -->
+<balance preset="vanilla-light">
+  <enabled>true</enabled>
+  <logEveryHit>false</logEveryHit>
+  <globalMultiplier>0.85</globalMultiplier>
+  <perHitCapFractionMaxHp>0.90</perHitCapFractionMaxHp>
+
+  <weaponClasses>
+    <class name="default"   multiplier="1.00" />
+    <class name="pistol"    multiplier="1.00" />
+    <class name="smg"       multiplier="1.00" />
+    <class name="ar"        multiplier="0.95" />
+    <class name="shotgun"   multiplier="0.95" />
+    <class name="sniper"    multiplier="0.80" />
+    <class name="bow"       multiplier="1.00" />
+    <class name="melee"     multiplier="1.00" />
+    <class name="explosive" multiplier="0.85" />
+  </weaponClasses>
+
+  <bodyParts>
+    <part name="default" multiplier="1.00" />
+    <part name="head"    multiplier="1.80" />
+    <part name="chest"   multiplier="1.00" />
+    <part name="arm"     multiplier="0.85" />
+    <part name="leg"     multiplier="0.85" />
+  </bodyParts>
+</balance>
