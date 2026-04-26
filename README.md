@@ -1,5 +1,12 @@
 # KitsunePvPExtended
 
+🦊 **Part of the [Kitsune Systems Collection](https://github.com/Kitsune-Den)** —
+[KitsuneTrapXP](https://github.com/Kitsune-Den/KitsuneTrapXP) ·
+[KitsuneZombieReach](https://github.com/Kitsune-Den/KitsuneZombieReach) ·
+[KitsuneKitchen7D](https://github.com/Kitsune-Den/KitsuneKitchen7D) ·
+[KitsuneFuelSaver](https://github.com/Kitsune-Den/KitsuneFuelSaver) ·
+[KitsuneFoxacary](https://github.com/Kitsune-Den/KitsuneFoxacary)
+
 ![Kitsune PvP Extended — Extended fights. Skill wins. Damage tuned for longer, tactical fights.](kitsune-pvp-extended.png)
 
 **Server-side PvP damage rebalance for 7 Days to Die 2.0. PvE stays 100% vanilla.**
