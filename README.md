@@ -1,5 +1,7 @@
 # KitsunePvPExtended
 
+![Kitsune PvP Extended — Extended fights. Skill wins. Damage tuned for longer, tactical fights.](kitsune-pvp-extended.png)
+
 **Server-side PvP damage rebalance for 7 Days to Die 2.0. PvE stays 100% vanilla.**
 
 Replaces the "one-shot, one-kill" feel of vanilla PvP with longer, tactical engagements — without ever touching damage to zombies, animals, or blocks. Built for the [community bounty BB-001](https://community.thefunpimps.com/resources/mod-release-pvp-balance-mod-help-us-test.118/).
