@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-$root    = 'C:\Users\darab\IdeaProjects\KitsunePvPExtended'
+$root    = $PSScriptRoot
 $dll     = Join-Path $root 'bin\Release\net48\KitsunePvPExtended.dll'
 $cfg     = Join-Path $root 'Config'
 
