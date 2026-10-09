@@ -36,7 +36,7 @@ Replaces the "one-shot, one-kill" feel of vanilla PvP with longer, tactical enga
 3. On first connect, look for these log lines:
    ```
    [KitsunePvP] Patched NetPackageDamageEntity.ProcessPackage
-   [KitsunePvP] Loaded v0.2.1 ~ preset: medium, global: 0.60
+   [KitsunePvP] Loaded v0.2.2 ~ preset: medium, global: 0.60
    ```
 
 That's the entire install. Players connect normally.
@@ -110,10 +110,20 @@ Every scaled hit is appended to `Mods/KitsunePvPExtended/Logs/pvp-YYYY-MM-DD.csv
 
 ```
 ts_utc, attacker_id, attacker_name, victim_id, victim_name, weapon, weapon_class,
-body_part, raw_dmg, scaled_dmg, multiplier, victim_hp_after, killed, distance_m
+body_part, raw_dmg, scaled_dmg, multiplier, victim_hp_after, killed, distance_m,
+victim_hp_before, fatal_in, fatal_cleared, died_within_3s
 ```
 
-Pull into your tool of choice for histograms / per-class TTK / engagement tuning. The in-memory ring (default 1024 entries) backs `kpvp stats`.
+- `victim_hp_before` is the server's view of the victim's HP when the hit arrived.
+- `victim_hp_after` and `killed` are **predictions** from that HP minus `scaled_dmg`.
+- `fatal_in` is whether the attacker's client flagged the hit as Fatal; `fatal_cleared` is whether the mod cleared that flag because the scaled hit wasn't lethal (`?` if the game build has no flags field).
+- `died_within_3s` is what actually happened: whether the victim's death was reported within 3 seconds of the hit. Rows are written once that window closes.
+
+A death after a hit the scaled numbers say wasn't lethal is always logged as a `[KitsunePvP] ... died within 3s of a non-lethal scaled hit` warning, even with `logEveryHit` off. Those are the lines to send with a bug report.
+
+Rows from older versions have fewer columns, so if today's file was started by one, new rows go to `pvp-YYYY-MM-DD-v2.csv` instead.
+
+Pull into your tool of choice for histograms / per-class TTK / engagement tuning. The in-memory ring (default 1024 entries) backs `kpvp stats`, which counts observed deaths where it has them.
 
 ## How it works
 
@@ -127,7 +137,7 @@ KitsunePvPExtended attaches a **Harmony prefix to `NetPackageDamageEntity.Proces
 4. Applies `globalMultiplier × weaponClassMultiplier × bodyPartMultiplier`, then clamps to the per-hit max-HP fraction.
 5. Writes the scaled value back into the packet's `strength` field (typed `UInt16` in 2.0, written via `Convert.ChangeType`).
 6. Clears the packet's **Fatal** (and Dismember) flag when the scaled hit no longer kills. The attacker's client sets Fatal from the *unscaled* damage, and the game zeroes the victim's HP on a Fatal hit regardless of `strength`, so without this any hit that was lethal before scaling would still kill.
-7. Logs the hit to telemetry.
+7. Hands the hit to a postfix, which logs it to telemetry once it knows whether the victim died.
 
 Because the mutation happens on the inbound packet **before** the response chain (`ProcessDamageResponse → ApplyLocalBodyDamage`) processes it, the scaled value flows naturally to the victim's HP, the kill feed, achievements, and any downstream observers.
 
