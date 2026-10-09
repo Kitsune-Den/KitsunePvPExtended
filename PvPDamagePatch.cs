@@ -19,9 +19,14 @@ public static class PvPDamagePatch
     private static FieldInfo _victimIdField;
     private static FieldInfo _hitTransformNameField;   // string, e.g. "Head" / "Hips" / "RightLeg"
     private static FieldInfo _attackingItemField;       // ItemValue
+    private static FieldInfo _flagsField;               // uint bitfield, carries the client's Fatal verdict
     private static PropertyInfo _itemValueItemClassProp; // ItemValue.ItemClass
     private static bool _fieldsResolved;
     private static string _resolvedSummary = "<not yet>";
+
+    // NetPackageDamageEntity flag bits (cFlagsFatal = 16 in the game assembly).
+    private const uint FlagDismember = 0x8;
+    private const uint FlagFatal     = 0x10;
 
     private static void ResolvePackageFields(Type pkgType)
     {
@@ -30,6 +35,7 @@ public static class PvPDamagePatch
         _victimIdField    = FirstField(pkgType, "entityId", "EntityId", "targetEntityId");
         _hitTransformNameField = FirstField(pkgType, "hitTransformName", "HitTransformName");
         _attackingItemField    = FirstField(pkgType, "attackingItem", "AttackingItem");
+        _flagsField            = FirstField(pkgType, "flags", "Flags");
 
         // ItemValue.ItemClass — resolve property on the field's runtime type
         if (_attackingItemField != null)
@@ -42,7 +48,8 @@ public static class PvPDamagePatch
             $"attacker={_attackerIdField?.Name ?? "<MISSING>"}, " +
             $"victim={_victimIdField?.Name ?? "<MISSING>"}, " +
             $"hitXform={_hitTransformNameField?.Name ?? "<MISSING>"}, " +
-            $"item={_attackingItemField?.Name ?? "<MISSING>"}";
+            $"item={_attackingItemField?.Name ?? "<MISSING>"}, " +
+            $"flags={_flagsField?.Name ?? "<MISSING>"}";
 
         _fieldsResolved = true;
         Log.Out($"[KitsunePvP] resolved NetPackageDamageEntity fields: {_resolvedSummary}");
@@ -121,11 +128,29 @@ public static class PvPDamagePatch
             // not Int32, so a plain boxed-int SetValue would throw.
             _strengthField.SetValue(__instance, Convert.ChangeType(scaled, _strengthField.FieldType));
 
+            // The attacker's client sets Fatal from the UNSCALED hit
+            // (damageEntityLocal: Strength >= Health -> Fatal), and both the server
+            // and the victim's client zero HP on Fatal no matter what strength says.
+            // Re-decide it against the scaled value. If the scaled hit really is
+            // lethal, Health still drops to <= 0 and the normal death path runs.
+            bool fatalCleared = false;
+            if (_flagsField != null && scaled < SafeHealth(victim))
+            {
+                uint flags = Convert.ToUInt32(_flagsField.GetValue(__instance));
+                if ((flags & FlagFatal) != 0)
+                {
+                    flags &= ~(FlagFatal | FlagDismember);
+                    _flagsField.SetValue(__instance, Convert.ChangeType(flags, _flagsField.FieldType));
+                    fatalCleared = true;
+                }
+            }
+
             if (cfg.LogEveryHit || wasProbeActive)
             {
                 Log.Out($"[KitsunePvP] {attacker.EntityName} -> {victim.EntityName} | " +
                         $"weapon={itemName ?? "?"} class={weaponClass} hit={hitTransform ?? "?"} | " +
-                        $"raw={rawStrength} scaled={scaled} mult={multiplier:0.000}");
+                        $"raw={rawStrength} scaled={scaled} mult={multiplier:0.000}" +
+                        (fatalCleared ? " | fatal flag cleared" : ""));
             }
 
             PvPTelemetry.LogHit(attacker, victim, itemName, weaponClass, hitTransform, rawStrength, scaled, multiplier);
@@ -160,5 +185,13 @@ public static class PvPDamagePatch
     {
         try { return victim.GetMaxHealth(); }
         catch { return 100; }
+    }
+
+    // On failure, return int.MaxValue so the Fatal flag gets cleared. Leaving it
+    // set would let a scaled-down hit kill.
+    private static int SafeHealth(EntityPlayer victim)
+    {
+        try { return victim.Health; }
+        catch { return int.MaxValue; }
     }
 }

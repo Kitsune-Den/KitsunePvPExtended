@@ -36,7 +36,7 @@ Replaces the "one-shot, one-kill" feel of vanilla PvP with longer, tactical enga
 3. On first connect, look for these log lines:
    ```
    [KitsunePvP] Patched NetPackageDamageEntity.ProcessPackage
-   [KitsunePvP] Loaded v0.1.0 ~ preset: medium, global: 0.60
+   [KitsunePvP] Loaded v0.2.1 ~ preset: medium, global: 0.60
    ```
 
 That's the entire install. Players connect normally.
@@ -126,7 +126,8 @@ KitsunePvPExtended attaches a **Harmony prefix to `NetPackageDamageEntity.Proces
 3. Reads the packet's `attackingItem.ItemClass.Name` and `hitTransformName` for weapon/body classification.
 4. Applies `globalMultiplier × weaponClassMultiplier × bodyPartMultiplier`, then clamps to the per-hit max-HP fraction.
 5. Writes the scaled value back into the packet's `strength` field (typed `UInt16` in 2.0, written via `Convert.ChangeType`).
-6. Logs the hit to telemetry.
+6. Clears the packet's **Fatal** (and Dismember) flag when the scaled hit no longer kills. The attacker's client sets Fatal from the *unscaled* damage, and the game zeroes the victim's HP on a Fatal hit regardless of `strength`, so without this any hit that was lethal before scaling would still kill.
+7. Logs the hit to telemetry.
 
 Because the mutation happens on the inbound packet **before** the response chain (`ProcessDamageResponse → ApplyLocalBodyDamage`) processes it, the scaled value flows naturally to the victim's HP, the kill feed, achievements, and any downstream observers.
 

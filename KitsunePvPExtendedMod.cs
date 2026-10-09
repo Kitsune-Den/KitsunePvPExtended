@@ -44,6 +44,6 @@ public class KitsunePvPExtendedMod : IModApi
         // path is confirmed. Re-add `PvPTrace.Initialize(harmony);` here if a
         // future game version moves the damage path again.
 
-        Log.Out($"[KitsunePvP] Loaded v0.1.0 — preset: {PvPBalanceConfig.Current.PresetName}, global: {PvPBalanceConfig.Current.GlobalMultiplier:0.00}");
+        Log.Out($"[KitsunePvP] Loaded v{_modInstance.VersionString} ~ preset: {PvPBalanceConfig.Current.PresetName}, global: {PvPBalanceConfig.Current.GlobalMultiplier:0.00}");
     }
 }
