@@ -25,7 +25,7 @@ Replaces the "one-shot, one-kill" feel of vanilla PvP with longer, tactical enga
 
 ## Requirements
 
-- 7 Days to Die **3.0** (Dead Hot Summer; 2.x also supported)
+- 7 Days to Die **3.x** (built and tested against 3.3; 3.0 Dead Hot Summer and 2.x also supported)
 - EAC **disabled** on the server (Harmony requirement; clients can keep EAC on)
 - Server only. Clients **do not** install this mod
 
