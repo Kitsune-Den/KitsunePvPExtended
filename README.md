@@ -36,7 +36,7 @@ Replaces the "one-shot, one-kill" feel of vanilla PvP with longer, tactical enga
 3. On first connect, look for these log lines:
    ```
    [KitsunePvP] Patched NetPackageDamageEntity.ProcessPackage
-   [KitsunePvP] Loaded v0.2.1 ~ preset: medium, global: 0.60
+   [KitsunePvP] Loaded v0.2.2 ~ preset: medium, global: 0.60
    ```
 
 That's the entire install. Players connect normally.
