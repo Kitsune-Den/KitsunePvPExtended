@@ -65,8 +65,9 @@ public static class PvPDamagePatch
         return null;
     }
 
-    public static void ProcessPackagePrefix(object __instance, World _world)
+    public static void ProcessPackagePrefix(object __instance, World _world, out PvPHitState __state)
     {
+        __state = null;
         if (__instance == null || _world == null) return;
         if (!_fieldsResolved) ResolvePackageFields(__instance.GetType());
 
@@ -133,11 +134,13 @@ public static class PvPDamagePatch
             // and the victim's client zero HP on Fatal no matter what strength says.
             // Re-decide it against the scaled value. If the scaled hit really is
             // lethal, Health still drops to <= 0 and the normal death path runs.
-            bool fatalCleared = false;
-            if (_flagsField != null && scaled < SafeHealth(victim))
+            int hpBefore = SafeHealth(victim);
+            bool fatalIn = false, fatalCleared = false;
+            if (_flagsField != null)
             {
                 uint flags = Convert.ToUInt32(_flagsField.GetValue(__instance));
-                if ((flags & FlagFatal) != 0)
+                fatalIn = (flags & FlagFatal) != 0;
+                if (fatalIn && scaled < hpBefore)
                 {
                     flags &= ~(FlagFatal | FlagDismember);
                     _flagsField.SetValue(__instance, Convert.ChangeType(flags, _flagsField.FieldType));
@@ -149,16 +152,57 @@ public static class PvPDamagePatch
             {
                 Log.Out($"[KitsunePvP] {attacker.EntityName} -> {victim.EntityName} | " +
                         $"weapon={itemName ?? "?"} class={weaponClass} hit={hitTransform ?? "?"} | " +
-                        $"raw={rawStrength} scaled={scaled} mult={multiplier:0.000}" +
-                        (fatalCleared ? " | fatal flag cleared" : ""));
+                        $"raw={rawStrength} scaled={scaled} mult={multiplier:0.000} hp_before={hpBefore}" +
+                        (_flagsField == null ? " | flags field missing" : fatalCleared ? " | fatal flag cleared" : fatalIn ? " | fatal kept" : ""));
             }
 
-            PvPTelemetry.LogHit(attacker, victim, itemName, weaponClass, hitTransform, rawStrength, scaled, multiplier);
+            __state = new PvPHitState
+            {
+                When = DateTime.UtcNow,
+                Attacker = attacker, Victim = victim,
+                Weapon = itemName, WeaponClass = weaponClass, BodyPart = hitTransform,
+                RawDamage = rawStrength, ScaledDamage = scaled, Multiplier = multiplier, HpBefore = hpBefore,
+                FlagsKnown = _flagsField != null, FatalIn = fatalIn, FatalCleared = fatalCleared,
+            };
         }
         catch (Exception ex)
         {
             Log.Warning($"[KitsunePvP] ProcessPackagePrefix failed: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Runs after the game has applied the hit. Hands the prefix's view of the
+    /// hit to telemetry, which waits to see whether the victim actually dies.
+    /// </summary>
+    public static void ProcessPackagePostfix(PvPHitState __state)
+    {
+        if (__state != null) PvPTelemetry.LogHitOutcome(__state);
+    }
+
+    /// <summary>
+    /// Postfix on GameManager.GameMessageServer. A player's own client reports
+    /// their death to the server as an EntityWasKilled game message (the kill
+    /// feed line), which is the server's only reliable sign of a death the
+    /// client decided. Matched on argument types rather than names so it binds
+    /// on both 2.x and 3.x signatures.
+    /// </summary>
+    public static void GameMessageServerPostfix(object[] __args)
+    {
+        try
+        {
+            for (int i = 0; i < __args.Length; i++)
+            {
+                if (!(__args[i] is EnumGameMessages type)) continue;
+                if (type != EnumGameMessages.EntityWasKilled) return;
+                for (int j = i + 1; j < __args.Length; j++)
+                {
+                    if (__args[j] is int mainEntityId) { PvPTelemetry.RecordDeath(mainEntityId); return; }
+                }
+                return;
+            }
+        }
+        catch { }
     }
 
     private static string SafeAttackingItemName(object pkgInstance)

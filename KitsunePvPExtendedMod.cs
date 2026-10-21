@@ -28,7 +28,9 @@ public class KitsunePvPExtendedMod : IModApi
             {
                 harmony.Patch(processPkg,
                     prefix: new HarmonyMethod(AccessTools.Method(typeof(PvPDamagePatch),
-                                                                nameof(PvPDamagePatch.ProcessPackagePrefix))));
+                                                                nameof(PvPDamagePatch.ProcessPackagePrefix))),
+                    postfix: new HarmonyMethod(AccessTools.Method(typeof(PvPDamagePatch),
+                                                                 nameof(PvPDamagePatch.ProcessPackagePostfix))));
                 Log.Out("[KitsunePvP] Patched NetPackageDamageEntity.ProcessPackage");
                 patched = true;
             }
@@ -36,6 +38,20 @@ public class KitsunePvPExtendedMod : IModApi
         if (!patched)
         {
             Log.Error("[KitsunePvP] FATAL: NetPackageDamageEntity.ProcessPackage not found — mod will not function.");
+        }
+
+        // Death reports for telemetry's died_within_3s column. Optional: without
+        // it the column falls back to the server's own view of the victim.
+        var gameMessageServer = AccessTools.Method(typeof(GameManager), "GameMessageServer");
+        if (gameMessageServer != null)
+        {
+            harmony.Patch(gameMessageServer,
+                postfix: new HarmonyMethod(AccessTools.Method(typeof(PvPDamagePatch),
+                                                             nameof(PvPDamagePatch.GameMessageServerPostfix))));
+        }
+        else
+        {
+            Log.Warning("[KitsunePvP] GameManager.GameMessageServer not found; telemetry will only see deaths the server decides.");
         }
 
         // Trace patches (PvPTrace) are kept in source for future debugging but
